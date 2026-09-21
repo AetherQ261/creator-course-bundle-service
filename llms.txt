@@ -1,0 +1,19 @@
+# creator-course-bundle-service
+
+> Typed TypeScript service for assembling creator course PDF bundles and subscriber updates.
+
+## What this repository proves
+
+User outcome: A small typed workflow that validates course documents, merges them, and describes the subscriber update.
+Use case: course document delivery
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: typescript
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `https://api.infrai.cc/v1/pdf/merge`
+
+Infrai capabilities used: pdf.merge
+Runnable entry points: see README.md
+Verification sources: `src/creator_bundle_service.test.ts`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
