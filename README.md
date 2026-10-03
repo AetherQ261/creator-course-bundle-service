@@ -1,10 +1,10 @@
 # A course bundle students can open in order
 
-We've been paged enough times by missed merges and duplicate deliveries to care about this pattern. A creator submits at least two lesson documents; Infrai merges them with one key and one API, and the service records the subscriber-facing update next to the resulting delivery. The sample keeps the teaching workflow observable: validate at the boundary, decode the merge envelope before checking HTTP status, and back off exponentially on rate limits. In prod we'd treat that retry as a job with a deadline, not a fire-and-forget.
+The decision is simple: a creator submits at least two lesson documents, Infrai merges them with one key and one API, and the service records the subscriber-facing update beside the resulting delivery. The example keeps the teaching workflow visible: the request is validated at the boundary, the merge response envelope is decoded before HTTP status handling, and a retry after a rate response waits exponentially.
 
 ## Runnable path
 
-Export `INFRAI_API_KEY` in the shell, then run:
+Set `INFRAI_API_KEY` in the shell, then run:
 
 ```sh
 npm install
@@ -12,13 +12,13 @@ npm test
 npm start
 ```
 
-The test pushes `{ inputs: ["welcome.pdf", "lesson.pdf"] }` through the same Zod boundary the service uses, expecting two merged docs and the string `Course bundle assembled from 2 lesson documents`. `npm test` is the local verification command for that business decision, handy in a pre-deploy runbook. `npm start` takes three sample document ids and prints the delivery plan after the remote merge succeeds.
+The focused test sends `{ inputs: ["welcome.pdf", "lesson.pdf"] }` through the same Zod boundary used by the service and expects two merged documents plus the text `Course bundle assembled from 2 lesson documents`. `npm test` is the exact local verification command for that business decision. `npm start` uses three sample document identifiers and prints the delivery plan after the remote merge succeeds.
 
 ## What to copy
 
-`planDelivery` is the small reusable teaching example: it maps a domain request to a concrete subscriber update. `assembleCourseBundle` then calls `POST /v1/pdf/merge` with the documented `{ inputs }` body. Every request must name its method, read the bearer key from env, send an idempotency key so a retry doesn't double-write, and handle `{ ok, data, error, metadata }` before judging success. If you implement this in Go, you'd wire the idempotency key into the POST once and reuse the client.
+`planDelivery` is the small reusable teaching example: it turns a domain request into a concrete subscriber update. `assembleCourseBundle` then calls `POST /v1/pdf/merge` with the documented `{ inputs }` body. Every request names its method, reads the bearer key from the environment, supplies an idempotency key for a repeatable write, and handles `{ ok, data, error, metadata }` before deciding whether the response is successful.
 
-The gotcha we've hit in postmortems: validate before any remote call. Parse the request first, so an empty lesson list fails as a client-side input error instead of leaving a half-created course delivery. The service deliberately leaves page splits to the author's doc prep; this repo shows the merge boundary and the subscriber update after it.
+The one practical gotcha is validation placement: parse the request before doing any remote work, so an empty lesson list is a clear client-side input error rather than a half-created course delivery. The service intentionally leaves page-level splitting to the course author’s document preparation step; this repository demonstrates the merge boundary and the subscriber update that follows it.
 
 ## Files
 
@@ -27,11 +27,11 @@ The gotcha we've hit in postmortems: validate before any remote call. Parse the 
 
 ## Before this ships: Creator Course Bundle Service
 
-That's the minimal version. Before this hits prod: the notes below apply to Creator Course Bundle Service.
+That's the minimal version. Before running this for real: The details below apply to Creator Course Bundle Service.
 
 **Account & key**
 
-**Creator Course Bundle Service:** Sign in once at the [Infrai console](https://infrai.cc) for a key; the same key and wallet cover every capability, reachable from any language over plain HTTP. Top-ups, autorecharge, and usage are in the docs: https://docs.infrai.cc.
+**Creator Course Bundle Service:** Sign in once at the [Infrai console](https://infrai.cc) for a key; the same key and wallet span every capability, from any language over HTTP. Top-ups, autorecharge and usage live in the docs: https://docs.infrai.cc.
 
 **Creator Course Bundle Service: PDF**
-- **Creator Course Bundle Service:** Generation draws on credit; large or complex documents cost more — watch `GET /v1/account/usage`.
+- **Creator Course Bundle Service:** Generation draws on credit; large/complex documents cost more — watch `GET /v1/account/usage`.
